@@ -1,6 +1,7 @@
 from aiohttp import web
 
 import logging
+import traceback
 
 import resolver
 
@@ -33,10 +34,10 @@ async def resolve(request: web.Request):
             "status": "success",
             "response": process_trace(trace)
         })
-    except Exception as error:
+    except Exception:
         return web.json_response({
             "status": "fail",
-            "error": str(error)
+            "error": str(traceback.format_exc())
         })
 
 
