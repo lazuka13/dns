@@ -1,10 +1,9 @@
+import logging
+import socket
+
 import pytest
 
-import logging
-
 import resolver
-
-import socket
 
 logger = logging.getLogger("resolver")
 logger.setLevel(logging.ERROR)

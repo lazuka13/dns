@@ -1,7 +1,7 @@
-from aiohttp import web
-
 import logging
 import traceback
+
+from aiohttp import web
 
 import resolver
 
