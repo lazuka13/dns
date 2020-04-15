@@ -36,7 +36,7 @@ def test_resolve_basic(target, expected):
         assert result.response.address == expected
 
 
-@pytest.mark.parametrize("target,expected", BASIC)
+@pytest.mark.parametrize("target,expected", ALIAS)
 def test_resolve_alias(target, expected):
     result = resolver.resolve(target)[-1]
     assert validate(result)
