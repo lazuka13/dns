@@ -19,6 +19,12 @@ ALIAS = [
     ("banners.adfox.ru", "93.158.134.158")
 ]
 
+INVALID = [
+    "yandex.xxx.uuuu",
+    "best.hhh.ddddd"
+    "123456"
+]
+
 
 def validate(trace_record: resolver.TraceRecord):
     try:
@@ -34,6 +40,28 @@ def test_resolve_basic(target, expected):
     assert validate(result)
     if expected:
         assert result.response.address == expected
+
+
+@pytest.mark.parametrize("target,expected", BASIC)
+def test_resolve_basic_repeat(target, expected):
+    for _ in range(10):
+        result = resolver.resolve(target)[-1]
+        assert validate(result)
+        if expected:
+            assert result.response.address == expected
+
+
+@pytest.mark.parametrize("target", INVALID)
+def test_resolve_invalid(target):
+    result = resolver.resolve(target)[-1]
+    assert result.response.address is None
+
+
+@pytest.mark.parametrize("target", INVALID)
+def test_resolve_invalid_repeat(target):
+    for _ in range(10):
+        result = resolver.resolve(target)[-1]
+        assert result.response.address is None
 
 
 @pytest.mark.parametrize("target,expected", ALIAS)

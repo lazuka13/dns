@@ -30,6 +30,7 @@ async def resolve(request: web.Request):
         target_host = request.rel_url.query['domain']
         need_trace = True if request.rel_url.query['trace'] == "true" else False
         trace = resolver.resolve(target_host, need_trace)
+        print(trace)
         return web.json_response({
             "status": "success",
             "response": process_trace(trace)

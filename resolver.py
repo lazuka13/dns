@@ -37,10 +37,13 @@ def resolve(target_host, need_trace=False):
     # try using cache
     if not need_trace:
         # check address cache
-        if target_host in cache_address and \
-                cache_address[target_host].ts + cache_address[target_host].ttl > time.time():
-            trace = [TraceRecord(request_addr="cache", request_type="A", response=cache_address[target_host])]
-            return trace
+        if target_host in cache_address:
+            if cache_address[target_host].ts + cache_address[target_host].ttl > time.time():
+                trace = [TraceRecord(request_addr=DNSRecord(name="cache", address=None, ttl=None, ts=None),
+                                     request_type="A", response=cache_address[target_host])]
+                return trace
+            else:
+                cache_address.pop(target_host)
 
         # check authority cache
         subs = []
@@ -53,11 +56,15 @@ def resolve(target_host, need_trace=False):
         subs.append(target_host)
         subs = list(reversed(subs))
         for s in subs:
-            if s in cache_authority and cache_authority[s].ts + cache_authority[s].ttl > time.time():
-                # update curr_server for faster resolve path
-                curr_server = cache_authority[s]
-                trace.append(TraceRecord(request_addr="cache", request_type="NS", response=curr_server))
-                break
+            if s in cache_authority:
+                if cache_authority[s].ts + cache_authority[s].ttl > time.time():
+                    # update curr_server for faster resolve path
+                    curr_server = cache_authority[s]
+                    trace.append(TraceRecord(request_addr=DNSRecord(name="cache", address=None, ttl=None, ts=None),
+                                             request_type="NS", response=curr_server))
+                    break
+                else:
+                    cache_authority.pop(s)
 
     # find NS
     while not prev_server or prev_server.name != curr_server.name:
